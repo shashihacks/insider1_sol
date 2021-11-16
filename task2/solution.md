@@ -155,9 +155,9 @@ On the following part you will capture and analyze network traffic.
 __Solution:__
 
 # Use the images and wireshark capture here 
-![wireshark](images/svsuser.PNG)
+![user](images/svsuser.PNG)
 
-![wireshark](images/telnet.PNG)
+![telnet](images/telnet.PNG)
 
 
 Yes, it is possible to discover `svsuser`'s password as it is sent in plaintext.
