@@ -323,13 +323,13 @@ PING utility is used to check if a device or a domain is reachable and operating
 We used 2 VMs one of them is naive VM and another impersonating VM which will send ping requests to the naive machine but it will spoof the IP address and it will use the host machine IP address and this will be peformed using Hping3 as shown in the image below
 
 
-![hping3request](images/hping3request.PNG)
+![hping3request](images/hping3request.png)
 
 The IP address of the host machine is 192.168.0.3 which will be used to spoof the naive machine and 192.168.0.44 is the IP address of the naive machine.
 
 After sending the ping requests we check wireshark and we can see it can see the requests are coming from the host machine 192.168.0.3 while it is coming from  the impersonating VM 
 
-![hping3wireshark](images/hping3wireshark.PNG)
+![hping3wireshark](images/hping3wireshark.png)
 
 __4.2 What command did you use to create the spoofing PING request? Explain it.__
 
