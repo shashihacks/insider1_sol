@@ -345,7 +345,7 @@ __Solution__
 ```bash
 $ sudo hping3 -a 192.168.0.3 192.168.0.44 --icmp 
 ```
-The ip address after -a is the spoofing ip adress and the second ip address is the destination address
+The ip address after -a is the spoofing ip address and the second ip address is the destination address
 
 __4.3 What happens with the ICMP packets that are sent from the NaiveVM to the Host Machine?__
 
