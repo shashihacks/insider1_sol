@@ -87,14 +87,22 @@ __Solution:__
 No, unprivileged user cannot monitor network interfaces unless permission where given when installing any monitoring tools that have implicit access to network interfaces.
 
 
+__2.4 What is the difference between display and capture filters?__
 
+__Solution:__
+
+Display records all the packets and then filters which packets will be displayed depending on protocol,values,etc.
+Capture filters record only the packets that meets the capture filter and discards the others. 
 
 
 __2.5 Write the syntax for a wireshark capture filter so that all IP datagrams with source or destination IP address equal to 10.10.10.12 are recorded.__
 __Solution__
 
+There are 2 ways to capture records as shown below.
+
 ```bash
-$: ip.dst == 10.10.10.12 && ip.src==10.10.10.12
+$: ip.host==10.10.10.12
+$: ip.dst==10.10.10.12 && ip.src==10.10.10.12
 ```
 
 __2.6 How can you tell if a network interface is running in "promiscuous mode" ?__
@@ -130,10 +138,10 @@ __Result__ (`PROMISC,UP`)
 
 
 
-- Spoof the packets using hping3 and analyse the wireshark capture, if wureshark captures the packets of other machines, the NIC is running in `Promiscous mode`
+- Spoof the packets using hping3 and analyse the wireshark capture, if wireshark captures the packets of other machines, the NIC is running in `Promiscous mode`
 
 - Finding a remote machine NIC card mode:
-    - Run nmap to determine whether the mahcines network card is set to promiscous mode. although `nmap` does;nt confirm it but results with probability.
+    - Run nmap to determine whether the machines network card is set to promiscous mode. although `nmap` doesn't confirm it but results with probability.
 
 ```bash
 nmap -sV --script=sniffer-detect 192.168.206.131
@@ -154,7 +162,6 @@ On the following part you will capture and analyze network traffic.
 
 __Solution:__
 
-# Use the images and wireshark capture here 
 ![svsuser](images/svsuser.png)
 
 ![telnet](images/telnet.png)
@@ -166,7 +173,7 @@ Yes, it is possible to discover `svsuser`'s password as it is sent in plaintext.
 -  Login using `telnet`
 
 ```bash
-$: telnet
+$: telnet 
 svsuser
 UniPassau
 ```
@@ -183,7 +190,7 @@ __2.8 Write down the syntax for a wireshark display filter that shows packets co
 __Solution:__
 
 ```bash
-ip.dst == 192.168.206.131
+http && ip.dst == 192.168.206.131
 ```
 
 
@@ -283,7 +290,7 @@ __3.3 How exactly does nmap determine open TCP ports?__
 __Solution :__
 
 - Send `TCP/SYN` packet to all the ports.
-- If any ports respods with ``SYN/ACK`, then it completes the 3 way handshake by sending `ACK` now it can dtermine that port is open.
+- If any ports responds with ``SYN/ACK`, then it completes the 3 way handshake by sending `ACK` now it can determine that port is open.
 
 
 The implementation of the network stacks of all operating systems differ in a small amount.
@@ -296,7 +303,7 @@ __Solution__
 ![os_fingerprinting](images/os_fingerprinting.PNG)
 
 - Sends `TCP/SYN` packets to all ports
-- Responded ports are probed later (in Our example `port 80` is responded)
+- Responded ports are probed later (in Our example `port 80` responded)
 - Probing `port 80` with various flags to determinate(guess) the OS type.
 1.  `ICMP packets` - checking the response, eg: `TTL`
 2. Sending TCP packet with `ECN`, `SYN`,  `CWR`, `Reserved` set to 1.
@@ -338,7 +345,7 @@ __Solution__
 ```bash
 $ sudo hping3 -a 192.168.0.3 192.168.0.44 --icmp 
 ```
-The ip adress after -a is the spoofing ip adress and the second ip address is the destination address
+The ip address after -a is the spoofing ip adress and the second ip address is the destination address
 
 __4.3 What happens with the ICMP packets that are sent from the NaiveVM to the Host Machine?__
 
@@ -348,8 +355,11 @@ The reply sent from the naive machine will be dropped by the host machine as the
 
 ### Exercise 5: Small glimpse at the Real Life Project
 The network contains lot of other computers with closed ports and a computer with two open ports: SSH (port 22) and MQTT (port 1883).
-This can be found with the command line tool `nmap -sn 192.168.0.*`.
-Here, the attacker scans the IP range for open ports.
+This can be found with the command line tool `nmap -sn 192.168.0.*` 
+After finding the device `nmap -p1883 192.168.0.100 -Pn` was used to confirm that port 1883 was open on the device.
+
+![mqtt](images/mqttscan.png)
+
 Since it was clear that it is a MQTT server, the developer tools had to be installed for MQTT.
 The MQTT Library has to be installed first to be able to connect to the discovered MQTT server.
 
@@ -368,6 +378,12 @@ $ mosquitto_pub -h 192.168.0.100 -t /lab/group1 -m "hello"
 ```
 
 ### Exercise 5.1
+
+__5.1  Why is it important in a real life setting that you need to document your steps
+very carefully?__
+
+
+__Solution__
 Searching for vulnerabilities in a real system can be a hard and long process.
 This implies the possibility of loss of information while pentesting. When steps are not documented, it can be hard for an other developer to reproduce the found vulnerability.
 To prevent this, an immediate documentation of the conducted steps should be always prepared.
