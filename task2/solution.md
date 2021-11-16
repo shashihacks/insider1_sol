@@ -155,6 +155,10 @@ On the following part you will capture and analyze network traffic.
 __Solution:__
 
 # Use the images and wireshark capture here 
+![wireshark](images/svsuser.PNG)
+
+![wireshark](images/telnet.PNG)
+
 
 Yes, it is possible to discover `svsuser`'s password as it is sent in plaintext.
 
@@ -170,6 +174,8 @@ UniPassau
 - Stop the capture
 - apply the filter `telnet`
 - follow the stream to view username and password at once.
+
+![wireshark](images/tcpstream.PNG)
 
 
 __2.8 Write down the syntax for a wireshark display filter that shows packets containing HTTP messages with a destination IP address equal to your IP.__
