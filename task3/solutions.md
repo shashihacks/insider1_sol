@@ -174,5 +174,25 @@ iptables -A INPUT -p tcp --dport 53 -j DROP
 ```
 
 
+__5.4 Can you still browse the internet? Explain why / why not. You still want all machines (in all three subnets) to browse the World wide Web (http/https). There are, roughly speaking, ways to accomplish this in regard to DNS resolution.__
+
+__Solution__ No, we are unable to browse the internet, although connection to external IP addresses is still possible. This simply means that domain names can not be resolved.
 
 
+We can use:
+- To set in `Server-HH` one of Google’s DNS Server 8.8.8.8 as additional forwarder. The server is then forwarding DNS queries to a external server
+
+
+
+__5.5 Log all traffic that attempts to connect to server-HH__
+__Solution__
+
+```bash
+iptables -A FORWARD -m state --state NEW -d 192.168.1.3 -j LOG --log-prefix "New HH Connection: "
+```
+
+- log files can be viewed in
+
+```bash
+$: cat /var/log/syslog
+```
