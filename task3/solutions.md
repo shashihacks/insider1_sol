@@ -237,7 +237,49 @@ __Solution__
     - Reverse DNS is mainly used to track the origin of a website visitor, the origin of an e-mail message, etc.
 
 
+__6.3 Explain the concept of DNS forwarding? Are there any security gains when DNS forwarding is used? Is there any additional filtering that would be possible (give an
+example)?__
+
 - DNS forwarding is the process by which particular sets of DNS queries are handled by a designated server, rather than being handled by the initial server contacted by the client.
 - Usually, all DNS servers that handle address resolution within the network are configured to forward requests for addresses that are outside the network to a dedicated forwarder.
 
 - When deciding how to allocate DNS resources on a network it’s important to implement some separation between external and internal Domain Name Services. Having all DNS servers configured to handle both external and internal resolution can impact the performance and security of a network.
+
+- If the DNS server has no forwarder listed for the name designated in the query, it can attempt to resolve the query using standard recursion using root servers which is inefficient
+
+
+
+In the Incremental Transfer, the server retrieves only the resource records that have changed within a zone so that it remains synchronized with the primary DNS server.
+
+When using incremental transfer the SOA record is compared to see whether any changes have been made. If the primary name server has a higher SOA version number than the secondary name server then a zone transfer will be initiated.
+
+If the SOA records version number is the same, a zone transfer will not be initiated.
+
+
+## Impact of DNS Zone Transfer Vulnerability
+DNS zone transfer offers no authentication. So, any client or someone posing as a client can ask a DNS server for a copy of the entire zone.
+
+This means that unless some kind of protection is introduced, anyone is capable of getting a list of all hosts for the particular domain, which gives them a lot of potential attack vectors.
+
+## How to Prevent DNS Zone Transfer Vulnerability?
+Only allow a zone transfer from trusted IPs. The following is an example of how to fix this in the BIND DNS server.
+
+- Navigate to `/etc/named.conf` and add these: 
+
+```bash
+    ACL trusted-servers 
+        {  
+            173.88.21.10; // ns1  
+            184.144.221.82; // ns2  
+        };
+        zone securitytrails.com 
+        {  
+            type master;   file "zones/zonetransfer.me"; 
+            allow-transfer { trusted-servers; };  
+        };
+```
+
+There are three types of zone transfer to consider:
+- Full zone transfer.
+- Incremental zone transfer.
+- AD replication
