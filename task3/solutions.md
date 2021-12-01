@@ -196,3 +196,48 @@ iptables -A FORWARD -m state --state NEW -d 192.168.1.3 -j LOG --log-prefix "New
 ```bash
 $: cat /var/log/syslog
 ```
+
+
+### Exercise 6: -EXTRA-CREDITS- DNS in more detail
+
+__6.1 Explain the concept of DNS zones. Explain the difference between a ’managed’ and a ’delegated’ zone.__
+__Solution:__ 
+1. DNS zone is portion of DNS name space, which contains DNS records.
+2. Allowing zones, makes it easy to handle DNS records for adminitartive reasons and for redundancy.
+3. Zones allow more fine grained granular control over the DNS records and components.
+4. A DNS zone can also contains multiple subdomains and zones may also co-exist on same physical server.
+
+
+Managed zones: Set of all DNS records that has same DNS prefix. Eg: example.com.
+
+```Managed zones are automatically assigned a set of name servers when they are created to handle responding to DNS queries for that zone.```
+
+``` A managed zone is the container for all of your DNS records that share the same DNS name prefix.
+```
+
+Delegated zones: Delegation allows an organization to assign control of a subdomain to another organization. The parent now has pointers to the original sources of data in the subdomain. Delegated zones are zones  delegated or managed by another name server who has authority over that zone.
+
+
+__6.2 Explain shortly (no more than 10 sentences) how the Internet’s DNS system is set up (e.g. root servers, zones, registrars ...).__
+__Solution__
+
+1.  Whenever a DNS request is sent, is usually handled by the  DNS server to map IP address,  which is in many most cases internet service provider(ISP).
+2. This DNS server also called `Recursive DNS resolver`.
+3. DNS resolver checks its cache for corresponding domain, if unavilable, it request `Root DNS server`.
+4. The Root DNS resolver responds with one of TLD name server(Top lovel domain) server. For Eg: www.example.com  has `.com` TLD name server (`.com NS`).
+
+5. `.com NS` responds  to follow up with responsible authoritative name server(Which is `ns1.exmaple.com`).
+6. Then DNS resolver request the authoritative name server to obtain the IP address.
+
+## Need to edit following
+
+
+- Reverse DNS look up: Maps IP addresses to domain names
+
+    - Reverse DNS is mainly used to track the origin of a website visitor, the origin of an e-mail message, etc.
+
+
+- DNS forwarding is the process by which particular sets of DNS queries are handled by a designated server, rather than being handled by the initial server contacted by the client.
+- Usually, all DNS servers that handle address resolution within the network are configured to forward requests for addresses that are outside the network to a dedicated forwarder.
+
+- When deciding how to allocate DNS resources on a network it’s important to implement some separation between external and internal Domain Name Services. Having all DNS servers configured to handle both external and internal resolution can impact the performance and security of a network.
