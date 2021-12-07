@@ -193,7 +193,7 @@ After that we configured named.conf.options and named.conf.local files in order 
 
 ![local](images/local.png)
 
-The final step to configure the DNS is from the client side and this can be done by adjusting /etc/reslov.conf file on the client or adjusting the DNS configuration manually to server-HH IP address and the screenshot below shows we were able to ping using the hostnames from DNS server.
+The final step to configure the DNS is from the client side and this can be done by adjusting `/etc/reslov.conf` file on the client or adjusting the DNS configuration manually to server-HH IP address and the screenshot below shows we were able to ping using the hostnames from DNS server.
 
 ![pingdns](images/pingdns.png)
 
@@ -460,30 +460,55 @@ __Solution__
 - Zone transfer is needed either for creating a backup server or for redundancy, where the redundant server acts as secondary DNS server.
 
 
-__Solution__
 
-In the Incremental Transfer, the server retrieves only the resource records that have changed within a zone so that it remains synchronized with the primary DNS server.
+**Differences**
 
-When using incremental transfer the SOA record is compared to see whether any changes have been made. If the primary name server has a higher SOA version number than the secondary name server then a zone transfer will be initiated.
-
-If the SOA records version number is the same, a zone transfer will not be initiated.
+Zone transfer can be a full transfer or incremental transfer but zone replication allows to specify records to copy/replicate. Zone replication allows you to be able to decide the conditions or parameters for replicating the DNS zone.
 
 
-## Impact of DNS Zone Transfer Vulnerability
-DNS zone transfer offers no authentication. So, any client or someone posing as a client can ask a DNS server for a copy of the entire zone.
 
-This means that unless some kind of protection is introduced, anyone is capable of getting a list of all hosts for the particular domain, which gives them a lot of potential attack vectors.
+__6.5 What is the concept/idea behind ’Incremental zone transfers’ ? What is the gain? Are they widely used in today’s DNS system?__
 
-## How to Prevent DNS Zone Transfer Vulnerability?
-Only allow a zone transfer from trusted IPs. The following is an example of how to fix this in the BIND DNS server.
+__Solution:__
+
+- Incremental Zone Transfer: Incremental zone transfers, the secondary DNS server retrieves only resource records that have been modified or changed within a zone, so that it remains synchronized with the primary DNS server.
+
+- When incremental transfers are used, the databases on the primary server and the secondary server are compared against each other to check differences.
+- If the zone records are identified as original (based on the serial number of the Start of Authority resource record), no zone transfer is performed. If not  a transfer of the delta resource records commences (A serial number sequence is checked to see if the transfer has occured or not).
+- Because of this transfer method, it requires  less bandwidth and create less network traffic, making  them to copy DNS records faster.
+
+ 
+- Yes, Incremental zone transfers are widely used and they are efficient ways to copy records from primary to secondary DNS server.
+
+
+__6.6 Can you think of any malicious attacks? Give some details how you would carry out such attacks.__
+__Solution:__
+
+
+__6.7 What are the general options to secure DNS transfers? How do they roughly work?__
+
+- Some of the common ways attacks in DNS transfers happen in DNS zone transfers.
+
+__Impact of DNS Zone Transfer Vulnerability__
+
+- Zone transfer can be done withotut any form of authentication, as any client can request for copy of DNS records of the entire zone and server can send without verifying the client.
+
+- Unless some protection mechanism is used, anyone will be able to get all the records for that particular domain, which gives the potential attacker to obtain network information and map to find various potential targets.
+
+
+
+__Preventing DNS Zone Transfer Vulnerability?__
+
+- Allowing zone trabnsfers from trusted clients
+-  The following is an example of how to fix this in the BIND DNS server.
 
 - Navigate to `/etc/named.conf` and add these: 
 
 ```bash
     ACL trusted-servers 
         {  
-            173.88.21.10; // ns1  
-            184.144.221.82; // ns2  
+            192.168.2.2; // ns1  
+            192.168.1.2; // ns2  
         };
         zone example.com 
         {  
@@ -492,25 +517,9 @@ Only allow a zone transfer from trusted IPs. The following is an example of how 
         };
 ```
 
-There are three types of zone transfer to consider:
-- Full zone transfer.
-- Incremental zone transfer.
-- AD replication
+
+- Some of the DNS servers ask for HMAC(Message authentication codes) when requesting zone transfers. Servers can identify the legitimate clients by verifying the HMACs sent by the client.
 
 
 
 
-
-AXFR. Asynchronous Full Transfer Zone (DNS request)
-
-Controlling zone replication allows you to be able to decide the parameters for replication for the DNS zone
-
-SOA record, which indicates the start of authority.
-A records for IPv4 addresses.
-AAAA records for IPv6 addresses.
-CNAME records for canonical records that indicate the canonical domain.
-MX records for the receiving email servers for the domain. 
-TXT records for various verification methods
-SRV records for services. 
-PTR for a reverse DNS lookup.
-And more.
