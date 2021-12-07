@@ -202,14 +202,6 @@ We tried to connect through ssh from client-PA into server-HH and it worked afte
 ![ssh](images/ssh.png)
 
 
-### Exercise 4: Firewalling
-
-
-![firewalling](images/firewalling.PNG)
-
-
-
-
 
 ### Exercise 4: Firewalling
 
@@ -221,7 +213,7 @@ __4.1 Set the firewalls to deny all connections by default.__
 __Solution__
 
 
-- In our setup following  rules are setup in both firewalls.
+- In our setup following  policies are setup on both firewalls.
 
 ```bash
 iptables -P INPUT DROP   # Drop all incoming packets
@@ -255,9 +247,12 @@ __4.3 Tell the firewall FW-south to REJECT all icmp requests from the PA Subnet 
 __Solution__
 
 ```bash
-iptables -A FORWARD -s 192.168.3.1/24 -p ICMP --icmp-type 8 -j REJECT
+iptables -A FORWARD -s 192.168.3.3/24 -p ICMP --icmp-type 8 -j REJECT
 ```
-## Show PING responspose from server-HH
+Below you can find client-PA cannot ping server-HH after appling the rule while server-HH can ping client-PA normally
+
+![pingblock](images/pingblock.png)
+![pingblock2](images/pingblock2.png)
 
 
 
