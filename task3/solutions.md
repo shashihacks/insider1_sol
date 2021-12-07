@@ -431,6 +431,16 @@ __6.3 Explain the concept of DNS forwarding? Are there any security gains when D
 
 __6.4 Explain in detail what a zone transfer is? Why is it needed? What is the difference between a zone transfer and a zone replication?__
 
+
+__Solution__
+
+- DNS zoine transfer is the process of copying/transfering DNS records from oner server to another, usually from primary DNS to secondary DNS server.
+
+- Zone transfer uses Transcation based TCP protocol.Takes form from client to server.
+
+- Zone transfer is needed either for creating a backup server or for redundancy, where the redundant server acts as secondary DNS server.
+
+
 __Solution__
 
 In the Incremental Transfer, the server retrieves only the resource records that have changed within a zone so that it remains synchronized with the primary DNS server.
