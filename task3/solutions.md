@@ -179,14 +179,10 @@ iptables -t nat -A POSTROUTING -d 0/0 -s 192.168.4.1/24 -j MASQUERADE
 iptables -A FORWARD -s 192.168.1.0/16 -d 0/0 -j ACCEPT
 ```
 ```bash
-iptables -A FORWARD -s 0/0 -d 192.168.1.0/16 -j ACCEPT
+iptables -A FORWARD -s 0/0 -d 192.168.1.0/24 -j ACCEPT
 ```
 
 
-![practical_subnetting](images/practical_subnetting.PNG)
-
-
-![dnsconfiguration](images/dnsconfiguration.png)
 
 
 
@@ -414,8 +410,7 @@ __Solution__
 
 
 
-__6.3 Explain the concept of DNS forwarding? Are there any security gains when DNS forwarding is used? Is there any additional filtering that would be possible (give an
-example)?__
+__6.3 Explain the concept of DNS forwarding? Are there any security gains when DNS forwarding is used? Is there any additional filtering that would be possible (give an example)?__
 
 - DNS forwarding allows DNS queries to be handled by seperate designated server rather than the server that has been contacted initially.
 
@@ -424,31 +419,19 @@ example)?__
 - DNS server are configured to forward request(Most cases) for all the addresses that are not within the network to a dedicated server/forwarder. FOr Eg: forwarding a request to `8.8.8.8` or trusted DNS, when an internal IP is trying connect to external domain.
 
 
-- Security Gains:
-- Allowing only known hosts improve security and also load on primary server
+**Security Gains:**
+- If requests are forwarded to known servers, and not to local Internet Service Provider (ISP). Benefits are increased performance and security from phishing, malware, botnets, and targeted online attacks. As the resolve process is trusted, clients can be sure of not being tricked with fake domains.
 
 
-- Additional filtering can be done by adding trsuted list of IPs to resolve.
 
--  For eg: Navigate to `/etc/named.conf` and add these: 
 
-```bash
-    ACL trusted-servers 
-        {  
-            173.88.21.10; // ns1  
-            184.144.221.82; // ns2  
-        };
-        zone example.com 
-        {  
-            type master;   file "zones/zonetransfer.me"; 
-            allow-transfer { trusted-servers; };  
-        };
-```
 
 # Need to edit following
 
 
+__6.4 Explain in detail what a zone transfer is? Why is it needed? What is the difference between a zone transfer and a zone replication?__
 
+__Solution__
 
 In the Incremental Transfer, the server retrieves only the resource records that have changed within a zone so that it remains synchronized with the primary DNS server.
 
