@@ -1,3 +1,157 @@
+### Exercise 1: Theoretical subnetting
+
+
+__1.1 Subnet the example network depicted in Figure 1 and give each network interface an IP  address (hosts, routers,firewalls, clients, servers, etc.).__
+
+
+![task1_subnetting](images/task1_subnetting.PNG)
+
+
+__1.2 What is the gateway address that client-hamburg needs to use if it wants to connect to a server on the Internet?__
+__Answer:__ 
+
+```bash
+192.168.1.1
+```
+__1.3 What is the broadcast address to reach only all the hosts that are connected to the Paris’ network?__
+
+```bash
+192.168.2.255
+```
+
+
+### Exercise 2: Practical subnetting
+
+
+- Configuration **Client-PA**
+
+```bash
+$ sudo ifconfig ens33 192.168.2.2
+```
+
+```bash
+$ sudo ip route add 192.168.2.0/24 via 192.168.1.1
+```
+
+```bash
+shashi@ubuntu:~$ route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 ens33
+192.168.2.0     192.168.1.1     255.255.255.0   UG    0      0        0 ens33
+
+```
+
+
+- Configuration **Server-HH**
+
+```bash
+$ sudo ifconfig ens33 192.168.1.2
+```
+
+```bash
+$ sudo ip route add 192.168.1.0/24 via 192.168.1.1
+```
+
+```bash
+shashi@ubuntu:~$ route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+192.168.1.0     192.168.2.1     255.255.255.0   UG    0      0        0 ens33
+192.168.2.0     0.0.0.0         255.255.255.0   U     0      0        0 ens33
+
+
+```
+
+
+- Configuration **Router** 
+
+
+```bash
+$ sudo ifconfig eth0 192.168.1.1
+```
+
+```bash
+$ sudo ifconfig eth0 192.168.2.1
+```
+
+```bash
+$ ifconfig 
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.1.1  netmask 255.255.255.0  broadcast 192.168.1.255
+        ether 00:0c:29:e4:10:53  txqueuelen 1000  (Ethernet)
+        RX packets 260  bytes 81706 (79.7 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 30  bytes 3862 (3.7 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.2.1  netmask 255.255.255.0  broadcast 192.168.2.255
+        ether 00:0c:29:e4:10:5d  txqueuelen 1000  (Ethernet)
+        RX packets 234  bytes 70516 (68.8 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 132  bytes 20986 (20.4 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
+
+
+
+
+- Connectivity Checks
+
+1. From server-HH send ping messages to the router and to client-PA
+
+```bash
+shashi@ubuntu:~$ ping 192.168.2.1
+PING 192.168.2.1 (192.168.2.1) 56(84) bytes of data.
+64 bytes from 192.168.2.1: icmp_seq=1 ttl=64 time=0.037 ms
+64 bytes from 192.168.2.1: icmp_seq=2 ttl=64 time=0.067 ms
+^C
+--- 192.168.2.1 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 3064ms
+rtt min/avg/max/mdev = 0.037/0.059/0.068/0.013 ms
+```
+2. From the router send ping messages to server-HH and to client-PA
+
+- Router to Client-PA
+
+```bash
+shashi@ubuntu:~$ ping 192.168.2.2
+┌──(kali㉿kali)-[~]
+└─$ ping 192.168.2.2
+PING 192.168.2.2 (192.168.2.2) 56(84) bytes of data.
+64 bytes from 192.168.2.2: icmp_seq=1 ttl=64 time=0.623 ms
+64 bytes from 192.168.2.2: icmp_seq=2 ttl=64 time=0.743 ms
+64 bytes from 192.168.2.2: icmp_seq=3 ttl=64 time=0.776 ms
+^C
+--- 192.168.2.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2027ms
+rtt min/avg/max/mdev = 0.623/0.714/0.776/0.065 ms
+```
+
+
+- Router to Server-HH
+
+```bash
+$ ping 192.168.1.2 
+PING 192.168.1.2 (192.168.1.2) 56(84) bytes of data.
+64 bytes from 192.168.1.2: icmp_seq=1 ttl=64 time=1.14 ms
+64 bytes from 192.168.1.2: icmp_seq=2 ttl=64 time=4.29 ms
+^C
+--- 192.168.1.2 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+rtt min/avg/max/mdev = 1.139/2.712/4.286/1.573 ms
+```
+
+3. From client-PA send ping messages to the router and to server-HH
+
+
+```bash
+$ ping 192.168.1.2
+PING 192.168.1.2 (192.168.1.2) 56(84) bytes of data.
+64 bytes from 192.168.1.2: icmp_seq=1 ttl=64 time=1.24 ms
+```
+
 ### Exercise 3: Routing and DNS
 
 ### Exercise 3: NAT
@@ -12,6 +166,12 @@ __Explain the functionality enabled by the keyword ’MASQUERADE’ in the conte
 
 __Solution__ Masquerade NAT allows  to translate many IP addresses to one single IP address. masquerading in  NAT can be used to  hide one or more IP addresses on the  internal network. We can make use of this to expose one single IP to public and rest inside private network.
 - Yes, we used it in our configuration.
+
+
+
+![practical_subnetting](images/practical_subnetting.PNG)
+
+
 
 ### Exercise 4: Firewalling
 
@@ -61,14 +221,12 @@ iptables -A FORWARD -s 192.168.3.1/24 -p ICMP --icmp-type 8 -j REJECT
 
 __4.4 Remove the ability to ping the firewalls themselves. This means you must tell the firewall to REJECT all icmp requests addressed to the FW-north and FW-south.__
 
-- Firewall south
+
+
+- Firewall North & Firewall south
+
 ```bash
 Iptables -A INPUT -p ICMP --icmp-type 0 -j DROP
-```
-
-- Firewall North
-
-```bash
 Iptables -A OUTPUT -p ICMP --icmp-type 8 -j DROP
 ```
 
@@ -128,12 +286,15 @@ $: sudo apt install nginx
 
 - Passau subnet (`192.168.3.1/24`)
 
-- **On firewall south on Both firewalls?**
+ **On North & South firewall**
+
 ```bash
 sudo iptables -A FORWARD -p tcp -s 192.168.3.1/24 -d 192.168.1.1/24 -m multiport --dports 80,443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 ```
 
 - Block from munich subnet
+
+**North firewall**
 
 ```bash
 sudo iptables -A FORWARD -p tcp -s 192.168.2.1/24 -d 192.168.1.1/24 -m multiport --dports 80,443 -m conntrack --ctstate NEW,ESTABLISHED -j REJECT
@@ -150,8 +311,8 @@ __5.2 Write the iptables commands / rules to allow HTTP and HTTPS traffic from t
 ## check input and output interfaces
 
 ```bash
-sudo iptables -A FORWARD -i enp0s3 -p tcp -d 10.1.0.0/24 -m multiport --dports 80,443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-sudo iptables -A FORWARD -o enp0s2 -p tcp -s 10.1.0.0/24 -m multiport --dports 80,443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -i eth0 -p tcp -d 192.168.1.0/24 -m multiport --dports 80,443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -o eth1 -p tcp -s 192.168.1.0/24 -m multiport --dports 80,443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 ```
 
 
@@ -272,7 +433,7 @@ Only allow a zone transfer from trusted IPs. The following is an example of how 
             173.88.21.10; // ns1  
             184.144.221.82; // ns2  
         };
-        zone securitytrails.com 
+        zone example.com 
         {  
             type master;   file "zones/zonetransfer.me"; 
             allow-transfer { trusted-servers; };  
@@ -283,3 +444,31 @@ There are three types of zone transfer to consider:
 - Full zone transfer.
 - Incremental zone transfer.
 - AD replication
+
+
+## Exercise 3
+Masquerade NAT allows you to translate multiple IP addresses to another single IP address. You can use masquerade NAT to hide one or more IP addresses on your internal network behind an IP address that you want to make public.This public address is the address to which the private addresses are translated and has to be a defined interface on your system. To be a defined interface, you must define the public address as a BORDER address.
+
+
+
+
+sudo route add default gw 192.168.4.2
+
+iptables -t nat -A POSTROUTING -d 0/0 -s 192.168.4.1/24 -j MASQUERADE
+iptables -A FORWARD -s 192.168.1.0/16 -d 0/0 -j ACCEPT
+iptables -A FORWARD -s 0/0 -d 192.168.1.0/16 -j ACCEPT
+
+
+AXFR. Asynchronous Full Transfer Zone (DNS request)
+
+Controlling zone replication allows you to be able to decide the parameters for replication for the DNS zone
+
+SOA record, which indicates the start of authority.
+A records for IPv4 addresses.
+AAAA records for IPv6 addresses.
+CNAME records for canonical records that indicate the canonical domain.
+MX records for the receiving email servers for the domain. 
+TXT records for various verification methods
+SRV records for services. 
+PTR for a reverse DNS lookup.
+And more.
