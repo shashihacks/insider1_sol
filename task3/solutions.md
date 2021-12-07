@@ -168,6 +168,20 @@ __Solution__ Masquerade NAT allows  to translate many IP addresses to one single
 - Yes, we used it in our configuration.
 
 
+```bash
+sudo route add default gw 192.168.4.2
+```
+```bash
+
+iptables -t nat -A POSTROUTING -d 0/0 -s 192.168.4.1/24 -j MASQUERADE
+```
+```bash
+iptables -A FORWARD -s 192.168.1.0/16 -d 0/0 -j ACCEPT
+```
+```bash
+iptables -A FORWARD -s 0/0 -d 192.168.1.0/16 -j ACCEPT
+```
+
 
 ![practical_subnetting](images/practical_subnetting.PNG)
 
@@ -316,7 +330,7 @@ sudo iptables -A FORWARD -p tcp -s 192.168.2.1/24 -d 192.168.1.1/24 -m multiport
 __5.2 Write the iptables commands / rules to allow HTTP and HTTPS traffic from the Internet (Lab’s Net) into the HAMBURG subnet. This includes access to a web server on server-HH.__
 
 
-## check input and output interfaces
+
 
 ```bash
 sudo iptables -A FORWARD -i eth0 -p tcp -d 192.168.1.0/24 -m multiport --dports 80,443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
@@ -377,14 +391,9 @@ __Solution:__
 4. A DNS zone can also contains multiple subdomains and zones may also co-exist on same physical server.
 
 
-Managed zones: Set of all DNS records that has same DNS prefix. Eg: example.com.
+__Managed zones:__ Set or container of all DNS records that has same DNS prefix. Eg: `example.de`.
 
-```Managed zones are automatically assigned a set of name servers when they are created to handle responding to DNS queries for that zone.```
-
-``` A managed zone is the container for all of your DNS records that share the same DNS name prefix.
-```
-
-Delegated zones: Delegation allows an organization to assign control of a subdomain to another organization. The parent now has pointers to the original sources of data in the subdomain. Delegated zones are zones  delegated or managed by another name server who has authority over that zone.
+__Delegated zones:__ Delegation allows an organization to assign control of a subdomain to another organization. The parent now has pointers to the original sources of data in the subdomain. Delegated zones are zones  delegated or managed by another name server who has authority over that zone.
 
 
 __6.2 Explain shortly (no more than 10 sentences) how the Internet’s DNS system is set up (e.g. root servers, zones, registrars ...).__
@@ -398,23 +407,46 @@ __Solution__
 5. `.com NS` responds  to follow up with responsible authoritative name server(Which is `ns1.exmaple.com`).
 6. Then DNS resolver request the authoritative name server to obtain the IP address.
 
-## Need to edit following
+
+- Reverse DNS look up: Maps IP addresses to domain names. It allows to track the origin of the website.
 
 
-- Reverse DNS look up: Maps IP addresses to domain names
 
-    - Reverse DNS is mainly used to track the origin of a website visitor, the origin of an e-mail message, etc.
 
 
 __6.3 Explain the concept of DNS forwarding? Are there any security gains when DNS forwarding is used? Is there any additional filtering that would be possible (give an
 example)?__
 
-- DNS forwarding is the process by which particular sets of DNS queries are handled by a designated server, rather than being handled by the initial server contacted by the client.
-- Usually, all DNS servers that handle address resolution within the network are configured to forward requests for addresses that are outside the network to a dedicated forwarder.
+- DNS forwarding allows DNS queries to be handled by seperate designated server rather than the server that has been contacted initially.
 
-- When deciding how to allocate DNS resources on a network it’s important to implement some separation between external and internal Domain Name Services. Having all DNS servers configured to handle both external and internal resolution can impact the performance and security of a network.
+- DNS forwarders sinmply forward from one server to another server, rather than addressing the query.
 
-- If the DNS server has no forwarder listed for the name designated in the query, it can attempt to resolve the query using standard recursion using root servers which is inefficient
+- DNS server are configured to forward request(Most cases) for all the addresses that are not within the network to a dedicated server/forwarder. FOr Eg: forwarding a request to `8.8.8.8` or trusted DNS, when an internal IP is trying connect to external domain.
+
+
+- Security Gains:
+- Allowing only known hosts improve security and also load on primary server
+
+
+- Additional filtering can be done by adding trsuted list of IPs to resolve.
+
+-  For eg: Navigate to `/etc/named.conf` and add these: 
+
+```bash
+    ACL trusted-servers 
+        {  
+            173.88.21.10; // ns1  
+            184.144.221.82; // ns2  
+        };
+        zone example.com 
+        {  
+            type master;   file "zones/zonetransfer.me"; 
+            allow-transfer { trusted-servers; };  
+        };
+```
+
+# Need to edit following
+
 
 
 
@@ -454,17 +486,7 @@ There are three types of zone transfer to consider:
 - AD replication
 
 
-## Exercise 3
-Masquerade NAT allows you to translate multiple IP addresses to another single IP address. You can use masquerade NAT to hide one or more IP addresses on your internal network behind an IP address that you want to make public.This public address is the address to which the private addresses are translated and has to be a defined interface on your system. To be a defined interface, you must define the public address as a BORDER address.
 
-
-
-
-sudo route add default gw 192.168.4.2
-
-iptables -t nat -A POSTROUTING -d 0/0 -s 192.168.4.1/24 -j MASQUERADE
-iptables -A FORWARD -s 192.168.1.0/16 -d 0/0 -j ACCEPT
-iptables -A FORWARD -s 0/0 -d 192.168.1.0/16 -j ACCEPT
 
 
 AXFR. Asynchronous Full Transfer Zone (DNS request)
