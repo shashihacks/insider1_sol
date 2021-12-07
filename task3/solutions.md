@@ -165,23 +165,47 @@ __Make sure that all the machines inside the three subnets (HAMBURG, PASSAU, MUN
 __Explain the functionality enabled by the keyword ’MASQUERADE’ in the context of the NAT configuration. Have you used it in your configuration?__
 
 __Solution__ Masquerade NAT allows  to translate many IP addresses to one single IP address. masquerading in  NAT can be used to  hide one or more IP addresses on the  internal network. We can make use of this to expose one single IP to public and rest inside private network.
-- Yes, we used it in our configuration.
+- Yes, we used it in our configuration to hide the private ip addresses of our devices to be able to access the internet as shown below. We configured on firewall south that each packet coming from client will be postrouted into interface enp0s9 which is accessible to the internet and we make each connection coming from the subnet ESTABLISHED and RELATED for stable communication
 
 
 ```bash
-sudo route add default gw 192.168.4.2
-```
-```bash
 
-iptables -t nat -A POSTROUTING -d 0/0 -s 192.168.4.1/24 -j MASQUERADE
+iptables -t nat -A POSTROUTING -s 192.168.3.0/24 -o enp0s9 -j MASQUERADE
 ```
 ```bash
-iptables -A FORWARD -s 192.168.1.0/16 -d 0/0 -j ACCEPT
+iptables -A FORWARD -s 192.168.3.0/24 -o enp0s9 -j ACCEPT
 ```
 ```bash
-iptables -A FORWARD -s 0/0 -d 192.168.1.0/24 -j ACCEPT
+iptables -A FORWARD -m state --state ESTABLISHED,RELATED -i enp0s9 -j ACCEPT
 ```
 
+
+![internet](images/internet.png)
+
+
+After configuring 5 VMs for the the 3 subnets and 2 firewalls we configured a DNS server on server-HH. We installed bind9 to confiure DNS. We created db.group4.example.org file to configure the dns and define the clients name with the relating IP address as shown below.
+
+![dnsconfiguration](images/dnsconfiguration.png)
+
+After that we configured named.conf.options and named.conf.local files in order to provide the zone, forwarders and trusted access list
+
+![options](images/options.png)
+
+![local](images/local.png)
+
+The final step to configure the DNS is from the client side and this can be done by adjusting /etc/reslov.conf file on the client or adjusting the DNS configuration manually to server-HH IP address and the screenshot below shows we were able to ping using the hostnames from DNS server.
+
+![pingdns](images/pingdns.png)
+
+We tried to connect through ssh from client-PA into server-HH and it worked after installing the SSH connection.
+
+![ssh](images/ssh.png)
+
+
+### Exercise 4: Firewalling
+
+
+![firewalling](images/firewalling.PNG)
 
 
 
