@@ -172,8 +172,16 @@ __Solution__ Masquerade NAT allows  to translate many IP addresses to one single
 ![practical_subnetting](images/practical_subnetting.PNG)
 
 
+![dnsconfiguration](images/dnsconfiguration.png)
+
+
+
 
 ### Exercise 4: Firewalling
+
+
+![firewalling](images/firewalling.PNG)
+
 
 __4.1 Set the firewalls to deny all connections by default.__  
 __Solution__
@@ -261,9 +269,9 @@ __Solution__
 - On south firewall
 
 ```bash
-sudo iptables -A OUTPUT -o enp0s3 -s 192.168.3.1/24 -j REJECT
-sudo iptables -A OUTPUT -o enp0s3 -s 192.168.2.1/24 -j REJECT
-sudo iptables -A OUTPUT -o enp0s3 -s 192.168.1.1/24 -j REJECT
+sudo iptables -A OUTPUT -o eth0 -s 192.168.3.1/24 -j REJECT
+sudo iptables -A OUTPUT -o eth0 -s 192.168.2.1/24 -j REJECT
+sudo iptables -A OUTPUT -o eth0 -s 192.168.1.1/24 -j REJECT
 ```
 
 __1. What is the reason to have FW rules that prohibit IP packets with a source address inside the internal subnet to leave to the external interface?__
