@@ -395,6 +395,14 @@ iptables -A FORWARD -m state --state NEW -d 192.168.1.3 -j LOG --log-prefix "New
 $: cat /var/log/syslog | tail
 ```
 
+![Logs](images/logs.png)
+
+
+__5.7 In the exercise above you have enabled logging of certain events. Why is it important to keep and analyze the logs? What can you do with them?__
+__Solution:__
+- System or server logs are essential in diagnosing, troubleshooting, and identifying cause of failures. They also help in understanding the various events took place in its lifetime.
+- Log files contains useful information like time, device name, state, IP addresses, in case of any malicious attack these are most valuable information.
+- With this information, it is easy to pinpoint various potential issues, without these it is hard to determine, what is going on in the server.
 
 ### Exercise 6: -EXTRA-CREDITS- DNS in more detail
 
