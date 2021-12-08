@@ -541,7 +541,7 @@ __Preventing DNS Zone Transfer Vulnerability__
 ```
 
 
-- Some of the DNS servers ask for HMAC(Message authentication codes) when requesting zone transfers. Servers can identify the legitimate clients by verifying the HMACs sent by the client.
+- Some of the DNS servers ask for HMAC(Keyed Message authentication codes) when requesting zone transfers. Servers can identify the legitimate clients by verifying the HMACs.
 
 
 

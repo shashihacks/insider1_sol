@@ -1,0 +1,93 @@
+{
+  "main": {
+    "id": "32b086879e23683d",
+    "type": "split",
+    "children": [
+      {
+        "id": "45666775cbb1ed46",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "task3/solutions.md",
+            "mode": "source"
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "92501f44d3c60f32",
+    "type": "split",
+    "children": [
+      {
+        "id": "ee50246aa294ef0a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "340e0aecbceef6a1",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "1d54be36d50c9af5",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "6b82f854534b39fe",
+    "type": "split",
+    "children": [
+      {
+        "id": "752c630fda45b492",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9233343823ac875e",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "task3/solutions.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "45666775cbb1ed46",
+  "lastOpenFiles": [
+    "task3/solutions.md"
+  ]
+}
