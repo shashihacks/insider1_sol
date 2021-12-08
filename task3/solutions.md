@@ -482,10 +482,29 @@ __Solution:__
 
 
 __6.6 Can you think of any malicious attacks? Give some details how you would carry out such attacks.__
-__Solution:__
+__SOlution__
+
+Carrying out a basic DNS Zone Transfer Attack isn't very hard: All one need to do is , pretend that he is the secondary server  and request the primary server for a copy of the zone records. And it sends without identifying the origin.
+
+- One of the simplest ways to stop zone transfer attacks  iws by restricting Zone transfers. At very minimum security level we can tell the IP address of the secondary and not transfer to anyone else.
+- In more complex setup,sign in may be required for transfers.
+
+- Enumerating DNS 
+
+```bash
+host -t ns example.com
+```
+
+```bash
+host -l example.com ns1.example.com
+```
+
+- Additionally tools like `dnsrecon` and `dnsenum` can be used to dump the DNS information and records.
 
 
 __6.7 What are the general options to secure DNS transfers? How do they roughly work?__
+
+__Solution__
 
 - Some of the common ways attacks in DNS transfers happen in DNS zone transfers.
 
