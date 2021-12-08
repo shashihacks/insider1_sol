@@ -193,7 +193,7 @@ After that we configured named.conf.options and named.conf.local files in order 
 
 ![local](images/local.png)
 
-The final step to configure the DNS is from the client side and this can be done by adjusting `/etc/reslov.conf` file on the client or adjusting the DNS configuration manually to `server-HH` IP address and the screenshot below shows we were able to ping using the hostnames from DNS server.
+The final step to configure the DNS is from the client side and this can be done by adjusting `/etc/resolv.conf` file on the client or adjusting the DNS configuration manually to `server-HH` IP address and the screenshot below shows we were able to ping using the hostnames from DNS server.
 
 ![pingdns](images/pingdns.png)
 
