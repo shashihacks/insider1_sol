@@ -99,7 +99,7 @@ eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 
 - Connectivity Checks
 
-1. From server-HH send ping messages to the router and to client-PA
+1. From `server-HH` send ping messages to the router and to `client-PA`
 
 ```bash
 shashi@ubuntu:~$ ping 192.168.2.1
@@ -113,7 +113,7 @@ rtt min/avg/max/mdev = 0.037/0.059/0.068/0.013 ms
 ```
 2. From the router send ping messages to server-HH and to client-PA
 
-- Router to Client-PA
+- `Router` to` Client-PA`
 
 ```bash
 shashi@ubuntu:~$ ping 192.168.2.2
@@ -130,7 +130,7 @@ rtt min/avg/max/mdev = 0.623/0.714/0.776/0.065 ms
 ```
 
 
-- Router to Server-HH
+- `Router` to `Server-HH`
 
 ```bash
 $ ping 192.168.1.2 
@@ -143,7 +143,7 @@ PING 192.168.1.2 (192.168.1.2) 56(84) bytes of data.
 rtt min/avg/max/mdev = 1.139/2.712/4.286/1.573 ms
 ```
 
-3. From client-PA send ping messages to the router and to server-HH
+3. From `client-PA` send ping messages to the `router` and to `server-HH`
 
 
 ```bash
@@ -165,7 +165,7 @@ __Make sure that all the machines inside the three subnets (HAMBURG, PASSAU, MUN
 __Explain the functionality enabled by the keyword ’MASQUERADE’ in the context of the NAT configuration. Have you used it in your configuration?__
 
 __Solution__ Masquerade NAT allows  to translate many IP addresses to one single IP address. masquerading in  NAT can be used to  hide one or more IP addresses on the  internal network. We can make use of this to expose one single IP to public and rest inside private network.
-- Yes, we used it in our configuration to hide the private ip addresses of our devices to be able to access the internet as shown below. We configured on firewall south that each packet coming from client will be postrouted into interface enp0s9 which is accessible to the internet and we make each connection coming from the subnet ESTABLISHED and RELATED for stable communication
+- Yes, we used it in our configuration to hide the private ip addresses of our devices to be able to access the internet as shown below. We configured on firewall south that each packet coming from client will be postrouted into interface enp0s9 which is accessible to the internet and we make each connection coming from the subnet `ESTABLISHED` and `RELATED` for stable communication
 
 
 ```bash
@@ -183,7 +183,7 @@ iptables -A FORWARD -m state --state ESTABLISHED,RELATED -i enp0s9 -j ACCEPT
 ![internet](images/internet.png)
 
 
-After configuring 5 VMs for the the 3 subnets and 2 firewalls we configured a DNS server on server-HH. We installed bind9 to confiure DNS. We created db.group4.example.org file to configure the dns and define the clients name with the relating IP address as shown below.
+After configuring 5 VMs for the the 3 subnets and 2 firewalls we configured a DNS server on `server-HH`. We installed bind9 to confiure DNS. We created db.group4.example.org file to configure the dns and define the clients name with the relating IP address as shown below.
 
 ![dnsconfiguration](images/dnsconfiguration.png)
 
@@ -193,11 +193,11 @@ After that we configured named.conf.options and named.conf.local files in order 
 
 ![local](images/local.png)
 
-The final step to configure the DNS is from the client side and this can be done by adjusting `/etc/reslov.conf` file on the client or adjusting the DNS configuration manually to server-HH IP address and the screenshot below shows we were able to ping using the hostnames from DNS server.
+The final step to configure the DNS is from the client side and this can be done by adjusting `/etc/reslov.conf` file on the client or adjusting the DNS configuration manually to `server-HH` IP address and the screenshot below shows we were able to ping using the hostnames from DNS server.
 
 ![pingdns](images/pingdns.png)
 
-We tried to connect through ssh from client-PA into server-HH and it worked after installing the SSH connection.
+We tried to connect through ssh from `client-PA` into `server-HH` and it worked after installing the SSH connection.
 
 ![ssh](images/ssh.png)
 
@@ -232,8 +232,8 @@ __Solution__ Access to the internet is blocked by default
 
 __1. Explain the differences between dynamic and static packet filtering. You should have used a dynamic filtering rule in the exercise above, state which and explain how it works.__
 __Solution:__ 
-- Static filtering :  In static filtering, firewall rule decises which packets are allowed or denied. Firewall evaluates each packet independently and has no impact with previous packets that have passed or denied.
-- Dynamic filtering:  In dynamic filtering  firewall, it reacts to an event and create or update rules to handle with that particular event. It filters traffic with particular connection states, usually filtered by IP and PORT. For eg: Opening an FTP to outside world, PORT 21 must be left open permanently open so that outside clients can attempt establishing connection.
+- **Static filtering :**  In static filtering, firewall rule decises which packets are allowed or denied. Firewall evaluates each packet independently and has no impact with previous packets that have passed or denied.
+- **Dynamic filtering:**  In dynamic filtering  firewall, it reacts to an event and create or update rules to handle with that particular event. It filters traffic with particular connection states, usually filtered by IP and PORT. For eg: Opening an FTP to outside world, PORT 21 must be left open permanently open so that outside clients can attempt establishing connection.
     - Dynamic filtering allows  port 21 to be opened at the start of an FTP session and then closes at the end of the session.
 
 
@@ -305,7 +305,7 @@ sudo iptables -A OUTPUT -o eth0 -s 192.168.1.1/24 -j REJECT
 
 __1. What is the reason to have FW rules that prohibit IP packets with a source address inside the internal subnet to leave to the external interface?__
 
-- The above rule will block all connection to internet with source from internal subnet addresses. Firewall on the south uses `NAT` and connected to internet, hence internal network need not be exposed to connect to internet.In such case of accessing internet, the south firewall need to route  route the packets when trying to access the external network. 
+- The above rule will block all connection to internet with source from internal subnet addresses. Firewall on the south uses `NAT` and connected to internet, hence internal network need not be exposed to connect to internet. In such case of accessing internet, the south firewall need to route  route the packets when trying to access the external network. 
 
 
 ### Exercise 5: Firewalling continued
@@ -315,7 +315,7 @@ __5.1 Give the iptables commands / rules that allow users on subnet PASSAU to vi
 
 __Solution__
 
-1. Installing `Nginx` server (server-HH - 192.168.1.3 ).
+1. Installing `Nginx` server (`server-HH` - `192.168.1.3` ).
 
 ```bash
 $: sudo apt install nginx
@@ -392,7 +392,7 @@ iptables -A FORWARD -m state --state NEW -d 192.168.1.3 -j LOG --log-prefix "New
 - log files can be viewed in
 
 ```bash
-$: cat /var/log/syslog
+$: cat /var/log/syslog | tail
 ```
 
 
@@ -435,17 +435,13 @@ __6.3 Explain the concept of DNS forwarding? Are there any security gains when D
 
 - DNS forwarders sinmply forward from one server to another server, rather than addressing the query.
 
-- DNS server are configured to forward request(Most cases) for all the addresses that are not within the network to a dedicated server/forwarder. FOr Eg: forwarding a request to `8.8.8.8` or trusted DNS, when an internal IP is trying connect to external domain.
+- DNS server are configured to forward request(Most cases) for all the addresses that are not within the network to a dedicated `server/forwarder`. For Eg: forwarding a request to `8.8.8.8` or any other trusted DNS, when an internal IP is trying connect to external domain.
 
 
 **Security Gains:**
 - If requests are forwarded to known servers, and not to local Internet Service Provider (ISP). Benefits are increased performance and security from phishing, malware, botnets, and targeted online attacks. As the resolve process is trusted, clients can be sure of not being tricked with fake domains.
 
 
-
-
-
-# Need to edit following
 
 
 __6.4 Explain in detail what a zone transfer is? Why is it needed? What is the difference between a zone transfer and a zone replication?__
@@ -471,7 +467,7 @@ __6.5 What is the concept/idea behind ’Incremental zone transfers’ ? What is
 
 __Solution:__
 
-- Incremental Zone Transfer: Incremental zone transfers, the secondary DNS server retrieves only resource records that have been modified or changed within a zone, so that it remains synchronized with the primary DNS server.
+- **Incremental Zone Transfer:** Incremental zone transfers, the secondary DNS server retrieves only resource records that have been modified or changed within a zone, so that it remains synchronized with the primary DNS server.
 
 - When incremental transfers are used, the databases on the primary server and the secondary server are compared against each other to check differences.
 - If the zone records are identified as original (based on the serial number of the Start of Authority resource record), no zone transfer is performed. If not  a transfer of the delta resource records commences (A serial number sequence is checked to see if the transfer has occured or not).
@@ -489,7 +485,7 @@ Carrying out a basic DNS Zone Transfer Attack isn't very hard: All one need to d
 - One of the simplest ways to stop zone transfer attacks  iws by restricting Zone transfers. At very minimum security level we can tell the IP address of the secondary and not transfer to anyone else.
 - In more complex setup,sign in may be required for transfers.
 
-- Enumerating DNS 
+- Enumerating DNS using `host`
 
 ```bash
 host -t ns example.com
@@ -516,10 +512,10 @@ __Impact of DNS Zone Transfer Vulnerability__
 
 
 
-__Preventing DNS Zone Transfer Vulnerability?__
+__Preventing DNS Zone Transfer Vulnerability__
 
-- Allowing zone trabnsfers from trusted clients
--  The following is an example of how to fix this in the BIND DNS server.
+- Allowing zone transfers from trusted clients
+-  The following is an example of how to fix this in the `BIND DNS` server.
 
 - Navigate to `/etc/named.conf` and add these: 
 
