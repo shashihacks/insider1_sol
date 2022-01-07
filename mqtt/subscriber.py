@@ -36,24 +36,36 @@ def on_connect(client, userdata, flags, rc):
     print("Connected to a broker!")
     client.subscribe("LINTANGtopic/verify")
 
+
+    
+
 def on_message(client, userdata, message):
     print("Message")
     print(message)
     print(message.payload)
     print(message.payload.decode())
+    try:
 
-    signature = message.payload.decode()
-    print(signature)
-    msg = b'A message for signing'
-    hash = int.from_bytes(sha256(msg).digest(), byteorder='big')
-    hashFromSignature = pow(int(signature), e, n)
-    print("Signature valid:", hash == hashFromSignature)
-    # cipherObject = message.payload.decode()
-    # cipherObject = eval(cipherObject)
-    # print(cipherObject['ciphertext'])
-    # plaintext = decrypt(cipherObject['nonce'], cipherObject['ciphertext'], cipherObject['tag'])
-    # print(plaintext)
-    # print(plaintext)
+        signature = message.payload.decode()
+        print(signature)
+        msg = b'A message for signing'
+        hash = int.from_bytes(sha256(msg).digest(), byteorder='big')
+        hashFromSignature = pow(int(signature), e, n)
+        print("Signature valid:", hash == hashFromSignature)
+        client.unsubscribe('LINTANGtopic/verify')
+    except:
+        print("exception from verify")
+    try:
+
+        client.subscribe("LINTANGtopic/test")
+        cipherObject = message.payload.decode()
+        cipherObject = eval(cipherObject)
+        print(cipherObject['ciphertext'])
+        plaintext = decrypt(cipherObject['nonce'], cipherObject['ciphertext'], cipherObject['tag'])
+        print(plaintext)
+    except:
+         print('exception from test')
+
 
 
 while True:
