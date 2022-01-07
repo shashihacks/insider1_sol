@@ -17,7 +17,17 @@ def encrypt(msg):
 client = mqtt.Client()
 client.connect('localhost', 9999)
 
+
+
+def on_message(client, userdata, message):
+    print(message.payload.decode())
+    print(client)
+    print(userdata)
+
+
+
 while True:
+    client.on_message = on_message
     nonce, ciphertext, tag = encrypt(input())
     myDict = {'nonce': nonce, 'ciphertext':ciphertext, 'tag':tag }
     print(myDict)
