@@ -34,7 +34,7 @@ def decrypt(nonce, ciphertext, tag):
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to a broker!")
-    client.subscribe("LINTANGtopic/verify")
+    client.subscribe("Group4/verify")
 
 
     
@@ -42,7 +42,7 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, message):
     print("Message")
     print(message)
-    if(message.topic == 'LINTANGtopic/verify'):
+    if(message.topic == 'Group4/verify'):
         
     # print(message.payload)
         print('Verfiy')
@@ -57,14 +57,14 @@ def on_message(client, userdata, message):
         print("Signature valid:", hash == hashFromSignature)
         if(hash != hashFromSignature):
             print("Fake broker")
-            client.unsubscribe('LINTANGtopic/verify')
+            client.unsubscribe('Group4/verify')
             client.disconnect()
             return
         else:  
-            client.unsubscribe('LINTANGtopic/verify')
-            client.subscribe("LINTANGtopic/test")
+            client.unsubscribe('Group4/verify')
+            client.subscribe("Group4/test")
 
-    elif(message.topic == 'LINTANGtopic/test'):
+    elif(message.topic == 'Group4/test'):
 
         print("inside test")
         cipherObject = message.payload.decode()

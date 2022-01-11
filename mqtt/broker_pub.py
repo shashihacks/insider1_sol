@@ -41,6 +41,6 @@ def on_message(client, userdata, message):
 
 while True:
     # nonce, ciphertext, tag = encrypt(input())
-    client.publish("LINTANGtopic/verify", signature)
+    client.publish("Group4/verify", signature)
     time.sleep(5)
    

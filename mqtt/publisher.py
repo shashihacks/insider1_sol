@@ -31,5 +31,5 @@ while True:
     nonce, ciphertext, tag = encrypt(input())
     myDict = {'nonce': nonce, 'ciphertext':ciphertext, 'tag':tag }
     print(myDict)
-    client.publish("LINTANGtopic/test", str(myDict))
+    client.publish("Group4/test", str(myDict))
    

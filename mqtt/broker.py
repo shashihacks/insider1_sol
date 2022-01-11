@@ -45,8 +45,8 @@ def brokerGetMessage():
     
     print("inside subscription")
     yield from C.subscribe([
-        ("LINTANGtopic/test", QOS_1),
-        ("LINTANGtopic/verify", QOS_1)
+        ("Group4/test", QOS_1),
+        ("Group4/verify", QOS_1)
     ])
 
    
