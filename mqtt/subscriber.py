@@ -23,12 +23,12 @@ client.connect('localhost', 9999)
 def decrypt(nonce, ciphertext, tag):
     cipher = AES.new(key, AES.MODE_EAX, nonce=nonce)
     plaintext = cipher.decrypt(ciphertext)
-    return plaintext.decode('ascii')
-    # try:
-    #     cipher.verify(tag)
-    #     return plaintext.decode('ascii')
-    # except:
-    #     return False
+    # return plaintext.decode('ascii')
+    try:
+        cipher.verify(tag)
+        return plaintext.decode('ascii')
+    except:
+        return False
 
 
 
@@ -42,9 +42,12 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, message):
     print("Message")
     print(message)
-    print(message.payload)
-    print(message.payload.decode())
-    try:
+    if(message.topic == 'LINTANGtopic/verify'):
+        
+    # print(message.payload)
+        print('Verfiy')
+        print(message.payload.decode())
+
 
         signature = message.payload.decode()
         print(signature)
@@ -52,19 +55,24 @@ def on_message(client, userdata, message):
         hash = int.from_bytes(sha256(msg).digest(), byteorder='big')
         hashFromSignature = pow(int(signature), e, n)
         print("Signature valid:", hash == hashFromSignature)
-        client.unsubscribe('LINTANGtopic/verify')
-    except:
-        print("exception from verify")
-    try:
+        if(hash != hashFromSignature):
+            print("Fake broker")
+            client.unsubscribe('LINTANGtopic/verify')
+            client.disconnect()
+            return
+        else:  
+            client.unsubscribe('LINTANGtopic/verify')
+            client.subscribe("LINTANGtopic/test")
 
-        client.subscribe("LINTANGtopic/test")
+    elif(message.topic == 'LINTANGtopic/test'):
+
+        print("inside test")
         cipherObject = message.payload.decode()
         cipherObject = eval(cipherObject)
         print(cipherObject['ciphertext'])
         plaintext = decrypt(cipherObject['nonce'], cipherObject['ciphertext'], cipherObject['tag'])
         print(plaintext)
-    except:
-         print('exception from test')
+
 
 
 
