@@ -16,6 +16,7 @@ e=0x10001
 
 
 client = mqtt.Client()
+# client.username_pw_set("test","test")
 client.connect('localhost', 9999)
 
 
