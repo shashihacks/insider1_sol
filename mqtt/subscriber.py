@@ -56,22 +56,24 @@ def on_message(client, userdata, message):
         hash = int.from_bytes(sha256(msg).digest(), byteorder='big')
         hashFromSignature = pow(int(signature), e, n)
         print("Signature valid:", hash == hashFromSignature)
-        if(hash != hashFromSignature):
-            print("Fake broker")
-            client.unsubscribe('Group4/verify')
-            client.disconnect()
-            return
-        else:  
-            client.unsubscribe('Group4/verify')
-            client.subscribe("Group4/test")
+        # if(hash != hashFromSignature):
+        #     print("Fake broker")
+        #     client.unsubscribe('Group4/verify')
+        #     client.disconnect()
+        #     return
+        # else:  
+            # client.unsubscribe('Group4/verify')
+        client.subscribe("Group4/test")
 
     elif(message.topic == 'Group4/test'):
 
-        print("inside test")
+        
         cipherObject = message.payload.decode()
         cipherObject = eval(cipherObject)
-        print(cipherObject['ciphertext'])
+        print("Received", cipherObject)
+        # print(cipherObject['ciphertext'])
         plaintext = decrypt(cipherObject['nonce'], cipherObject['ciphertext'], cipherObject['tag'])
+        print("Decrypting the message")
         print(plaintext)
 
 
