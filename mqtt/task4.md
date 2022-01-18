@@ -1,7 +1,6 @@
 ## Exercise 4: Improving the Security of MQTT once again
 
-We aim to solve Confidentiality and Integrity and also propose a solution on key distribution.
-
+We aim to solve `Confidentiality` by encrypting the message using `AES-128` and `Integrity` with digital signature.
 __Setting up the environment__
 
 - We used `HBMQTT` an open-source python implemention of `MQTT`.
@@ -15,6 +14,8 @@ pip install hbmqtt
 > Make sure to have python3 and above.
 
 - Providing `Confidentiality`  by encrypting the `publish` messages. For this, `AES-128` is used. This was chosen after comparing many other algorithms like `SPECK`, `SIMON`, `PRESENT`, but they tend to be weak with their key sizes, although they are ideal for low compuation intensive devices.
+
+> Shared secret keys are assumed to be shared.
 
 __Steps:__
 
@@ -153,4 +154,7 @@ __Subscriber(s)__
 
 5. clients can  now unsubscribe to `Group4/verify` and  continue subscribing to other topics as needed.
 6. In case of invalid signature. clients can simply disconnect from the connected broker.
+
+
+
 
