@@ -325,3 +325,268 @@ __Solution__
 
 1. We can  use TLS(DNS over TLS). This improves privacy and security between clients and resolvers.
 
+2. We used Nginx, this allows to create any stream into a TLS stream.
+
+3. Install `certbot`(openssl can be used as well)
+
+
+```bash
+$: sudo apt install certbot
+```
+
+```bash
+ # managed by Certbot
+ssl_certificate /etc/letsencrypt/live/pay.example.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/livepay.example.com/privkey.pem; 
+ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; 
+```
+
+4. Edit `/etc/nginx/streams/dns-over-tls`
+
+```bash
+upstream dns-servers {
+         server    127.0.0.1:53;
+}
+
+server {
+    listen 853 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/pay.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/livepay.example.com/privkey.pem; 
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+
+    ssl_protocols        TLSv1.2 TLSv1.3;
+    ssl_ciphers          HIGH:!aNULL:!MD5;
+        
+    ssl_handshake_timeout    10s;
+    ssl_session_cache        shared:SSL:20m;
+    ssl_session_timeout      4h;
+
+    proxy_pass dns-servers;
+
+}
+```
+
+5 Activate streams.
+
+- Edit `/etc/nignx/nginx.conf` and add the followig after `HTTP block`
+
+```bash
+stream {
+        include /etc/nginx/streams/*;
+}
+```
+
+6. Restart Nginx
+
+```bash
+sudo systemctl restart nginx
+```
+
+- Aftre the restart,  DoT starts server listening on the port 853.(Port can be  changed, but we used the default configuration )
+
+> Open the TCP port 853 manually using the firewall in case of port block issue.
+
+
+
+### Exercise 4: Secure Server Communication
+
+__4.1 Perform a man in the middle attack using ARP poisoning and show that you can monitor network traffic. Explain your setup__
+
+__Solution:__
+
+To perform the MITM using `ARP poisoning` we used `arpspoof`
+
+__Our Setup__
+
+![arpspoof](images/arpspoof.PNG)
+
+
+__step 1:__ Select the target Ip(can be obtained using `netdiscover` or `airodump-ng`)
+__step 2:__ Run `arpspoof` with target IP and gateway
+
+```bash
+sudo arpspoof -i eth0  -t 192.168.47.129  192.168.47.2 
+```
+
+- `eth0` interface you want to sniff the traffic
+- `192.168.47.129` - target IP(victim)
+- `192.168.47.2` - Router IP
+
+__step 3:__ Run `urlsnarf` to sniff the traffic(captures URLS only, to sniff all types of traffic , wireshark can be run)
+
+```bash
+$ sudo urlsnarf -i eth0   
+```
+
+__Step 4:__ Simulate the client (browse some non-secure sites)
+
+__Result__
+
+![urlsnarf](images/urlsnarf.PNG)
+
+
+
+__4.2 Setup a certification authority in your network and equip the payment server with a certificate.__  
+__Solution:__
+
+__Installtion and preparing PKI__
+
+1. Install `easy_rsa`.
+
+```bash
+$: sudo apt install easy-rsa
+```
+
+2. prepare a Public Key Infrastructure directory
+
+```bash
+$ mkdir ~/easy-rsa
+```
+
+3. Create the symlink with `ln` command
+
+```bash
+$ ln -s /usr/share/easy-rsa/* ~/easy-rsa/
+```
+
+- restric the usage to owner
+```bash
+$ chmod 700 /home/sammy/easy-rsa
+```
+
+4. Initialize the PKI inside `easy-rsa` directory.
+
+```bash
+$ cd ~/easy-rsa
+$ ./easyrsa init-pki
+```
+
+__Creating the certificate authority__
+
+1. create `var` file inside `easy-rsa`
+
+```bash
+$ cd ~/easy-rsa
+$ leafpad vars
+```
+
+and add the following
+
+```bash
+# change to your own values
+set_var EASYRSA_REQ_COUNTRY    "GE"
+set_var EASYRSA_REQ_PROVINCE   "Passau"
+set_var EASYRSA_REQ_CITY       "Passau"
+set_var EASYRSA_REQ_ORG        "UniPassau"
+set_var EASYRSA_REQ_EMAIL      "group4@outl;ook.com"
+set_var EASYRSA_REQ_OU         "uniPassau"
+set_var EASYRSA_ALGO           "ec"
+set_var EASYRSA_DIGEST         "sha512" 
+```
+
+save and then run
+
+```bash
+$ ./easyrsa build-ca
+```
+-  Confirmation details are asked, `ENTER` to accept default values.
+
+```bash
+Enter New CA Key Passphrase:
+Re-Enter New CA Key Passphrase:
+Common Name (eg: your user, host, or server name) [Easy-RSA CA]:
+
+CA creation complete and you may now import and sign cert requests.
+Your new CA certificate file for publishing is at:
+/home/kali/easy-rsa/pki/ca.crt
+
+```
+
+__Creating and Signing a certificate request__
+
+1. create a directory to store the keys
+
+```bash
+$ mkdir ~/my-certificates
+$ cd ~/my-certificates
+$ openssl genrsa -out payment-server.key
+```
+
+```bash
+openssl req -new -key payment-server.key -out payment-server.req
+```
+- When prompted, enter the values as above.
+
+- Once the above step is done,  copy the `payment-server.req` file to `CA server` using `scp`
+
+```bash
+$ scp payment-server.req pay@your_ca_server_ip:/tmp/payment-server.req
+```
+
+__Setting up Apache to use SSL__
+
+
+1. Open `default-ssl.conf` in apache2 config folder(`/etc/apache2/sites-enabled/000-default.conf`) and change point the certificate, keyfile and CA certificate
+
+![apache_Config](images/apache_Config.PNG)
+
+- Enable by running
+```bash
+$: sudo a2enmod ssl
+```
+
+
+- Restart apache
+
+```bash
+​sudo service apache2 restart 
+```
+
+__Result__
+
+![certificate](images/certificate.PNG)
+
+
+__4.3 Explain under which conditions and attacks a client may recognize a potential attack if the authentic payment server is equipped with a certificate from your CA. Again, show the different scenarios in a short demo.__
+
+__Solution__
+
+__Recognizable due to unknown issuer error__
+
+- Client connects to the fake website wher certificate is installed, attacker installs the server certificate signed by attacker CA:
+- This will throw a warning in browser
+
+
+__Recognizable due to missing lock icon__
+
+- Client can recognize when the site is downgraded `https` to `http`, and can notice `missing lock icon`.
+
+
+__4.4 Sketch an attack scenario in which a  not-hardened CA is exploited and recognizable attacks become almost impossible to detect.__
+
+__Solution:__ One of the possible ways is attacking the SSL in man-in-the-middle.
+
+- While using arpspoof, we can redirect the https traffic to own server, but this time own payment server is equipped with `https`.
+- When clients connects to our server, Web browser shows a warning of `Unknown identity` message. If the user ignores the warning and installs our CA certificate, we can present our fake page successfully.
+
+
+- This warning sign can be bypassed if the SSL certificate is officially signed, for this technique to follow the same way. To do this, we can create a certificate for a domian that we posses. We can use services like `Let's encrypt`, then we can redirect the users to this domain.
+
+
+__Technique : SSL Stripping.__
+
+![ssl_stripping](images/ssl_stripping.PNG)
+
+> SSL stripping may not work if the website implements  HTTP Strict Transport Security (HSTS), but can attack can be executed successfully, by installing a verfied SSL certificate on fake payment page and performing ARP poisoining. In this case, both connection use HTTPS. 
+
+
+
+
+
+
+
+
+
+
+
