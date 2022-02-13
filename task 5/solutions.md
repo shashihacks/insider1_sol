@@ -120,48 +120,7 @@ $: systemctl restart bind9
 ![dig](images/dig.PNG)
 
 
-__Setup Coova Chilli Captive portal__
 
-
-- Installing CoovaChilli
-
-- Install its dependency `haserl`
-
-```bash
-sudo apt-get install haserl
-```
-
-```bash
-$ wget https://blog.sajjan.com.np/CoovaChilli/coova-chilli_1.3.0_amd64.deb
-```
-
-```bash
-sudo dpkg -i coova-chilli_1.3.0_amd64.deb
-```
-
-- Once CoovaChilli is installed, edit the configuartion file `/etc/chilli/config`
-
-
-![chilli_config_1](images/chilli_config_1.PNG)
-
-![chilli_config_2](images/chilli_config_2.PNG)
-
-
--  Start and Enable chilli
-
-```bash
-$ sudo systemctl start chilli
-$ sudo systemctl enable chilli
-```
-
-- Once enabled a new interface will be created(`tun0`), this interface gets the gateway IP address for the configured hotspot.
-
-![coova_chilli_interface](images/coova_chilli_interface.PNG)
-
-
-__Captive portal:__
-
-![captive portal](images/captive_portal.PNG)
 
 __Setup: FreeRadius & web GUI daloRADIUS & mysql installation__
 
@@ -305,6 +264,59 @@ sudo systemctl restart apache2
 
 
 ![dalo_home](images/dalo_home.PNG)
+
+
+
+__Setup Coova Chilli Captive portal__
+
+
+- Installing CoovaChilli
+
+- Install its dependency `haserl`
+
+```bash
+sudo apt-get install haserl
+```
+
+```bash
+$ wget https://blog.sajjan.com.np/CoovaChilli/coova-chilli_1.3.0_amd64.deb
+```
+
+```bash
+sudo dpkg -i coova-chilli_1.3.0_amd64.deb
+```
+
+- Once CoovaChilli is installed, edit the configuartion file `/etc/chilli/config`
+
+
+![chilli_config_1](images/chilli_config_1.PNG)
+
+![chilli_config_2](images/chilli_config_2.PNG)
+
+
+-  Start and Enable chilli
+
+```bash
+$ sudo systemctl start chilli
+$ sudo systemctl enable chilli
+```
+
+- Once enabled a new interface will be created(`tun0`), this interface gets the gateway IP address for the configured hotspot.
+
+![coova_chilli_interface](images/coova_chilli_interface.PNG)
+
+
+
+
+__Captive portal:__
+
+![captive portal](images/captive_portal.PNG)
+
+
+__Payment page__
+
+![payment_page](images/payment_page.PNG)
+
 
 
 ### Exercise 2: DNS tunneling
