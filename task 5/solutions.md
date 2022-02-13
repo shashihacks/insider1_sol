@@ -4,10 +4,18 @@
 
 #### 1.1 Design and install a payment system which complies with the following requirements:
 
+__Tools: Overview__
+1. **Hostapd:** Access point configuration​​
+2. __Bind9:__  DNS ​​
+3. __Coova-Chilli:__ Access portal​
+4. __Apache2:__  Webserver​​
+5. __MySQL:__  Database​​
+6. __Freeradius:__  Authentication server​​
+7. __Daloradius:__  GUI for Radius server​
 
-`Hostapd`: To create an unprotected WLAN
 
-__Setup__
+
+__Setup Hostapd__
 
 1. Set adapter to `master` mode.  
 ```bash
@@ -39,7 +47,7 @@ $: sudo systemctl start hostapd
 ```
 
 
-__Setting up the DNS using bind9__
+__Setup  DNS using bind9__
 
 1. Installation
 
@@ -124,17 +132,190 @@ $: systemctl restart bind9
 ![dig](images/dig.PNG)
 
 
-__Setting up Coova Chilli Captive portal__
+__Setup Coova Chilli Captive portal__
 
 
-<!-- ADD here 
-images and setup
--->
-MySQL: Database​​
+- Installing CoovaChilli
 
-Freeradius: Authentication server​​​
+- Install its dependency `haserl`
 
-Daloradius: GUI for Radius server
+```bash
+sudo apt-get install haserl
+```
+
+```bash
+$ wget https://blog.sajjan.com.np/CoovaChilli/coova-chilli_1.3.0_amd64.deb
+```
+
+```bash
+sudo dpkg -i coova-chilli_1.3.0_amd64.deb
+```
+
+- Once CoovaChilli is installed, edit the configuartion file `/etc/chilli/config`
+
+
+![chilli_config_1](images/chilli_config_1.PNG)
+
+![chilli_config_2](images/chilli_config_2.PNG)
+
+
+-  Start and Enable chilli
+
+```bash
+$ sudo systemctl start chilli
+$ sudo systemctl enable chilli
+```
+
+- Once enabled a new interface will be created(`tun0`), this interface gets the gateway IP address for the configured hotspot.
+
+![coova_chilli_interface](images/coova_chilli_interface.PNG)
+
+
+__Captive portal:__
+
+![captive portal](images/captive_portal.PNG)
+
+__Setup: FreeRadius & web GUI daloRADIUS & mysql installation__
+
+
+1. install maria-db server
+
+```bash
+sudo apt install mariadb-server
+```
+
+2. Enable:
+
+```bash
+sudo systemctl enable mysql
+sudo systemctl start mysql
+```
+
+
+__Create a Database for FreeRADIUS__
+
+
+- Login as root
+
+```bash
+sudo mysql -u root -p
+```
+
+- Create DB for FreeRADIUS:
+
+```bash
+CREATE DATABASE demodb;
+```
+
+
+- GRANT all permission of created database to a user.
+
+```sql
+GRANT ALL ON demodb.* TO demouser@localhost IDENTIFIED BY "PASSWORD";
+```
+
+
+
+__Install  FreeRADIUS__
+
+
+```bash
+sudo apt-get install freeradius freeradius-mysql freeradius-utils -y
+```
+
+__Import FreeRADIUS database schema__
+
+```bash
+sudo -i 
+mysql -u root -p demodb < /etc/freeradius/3.0/mods-config/sql/main/mysql/schema.sql
+exit
+```
+
+__Create a symbolic link for the SQL module__
+
+
+```bash
+sudo ln -s /etc/freeradius/3.0/mods-available/sql /etc/freeradius/3.0/mods-enabled/
+```
+
+__Change the ownership of SQL files__
+
+```bash
+sudo chgrp -h freerad /etc/freeradius/3.0/mods-available/sql
+```
+
+```bash
+sudo chown -R freerad:freerad /etc/freeradius/3.0/mods-enabled/sql
+```
+
+__Download daloRADIUS__
+
+```bash
+$ wget https://github.com/lirantal/daloradius/archive/master.zip
+```
+
+- extract and move to `www` directory
+
+```bash
+$ unzip master.zip
+$ sudo mv daloradius-master /var/www/html/daloradius
+```
+
+
+__ Import the daloRAIUS MySQL tables to the FreeRADIUS database__
+
+```bash
+cd /var/www/html/daloradius
+sudo mysql -u root -p demodb< contrib/db/fr2-mysql-daloradius-and-freeradius.sql
+sudo mysql -u root -p demodb< contrib/db/mysql-daloradius.sql
+```
+
+
+__Change permission of daloRADIUS directory__
+
+- Rename Sample file:
+
+```bash
+cd /var/www/html/daloradius/library/
+sudo mv daloradius.conf.php.sample daloradius.conf.php
+```
+
+- give permissions to user
+
+```bash
+sudo chown -R www-data:www-data /var/www/html/daloradius/
+```
+
+- Change Configuration file permission
+
+```bash
+sudo chmod 664 /var/www/html/daloradius/library/daloradius.conf.php
+```
+
+__Add Database details in the daloRADIUS configuration file__
+
+
+```bash
+sudo nano /var/www/html/daloradius/library/daloradius.conf.php
+```
+
+- Change the configuration values 
+
+![daloradius_config](images/daloradius_config.PNG)
+
+
+
+__Restart FreeRADIUS and Apaches services__
+
+
+```bash
+sudo systemctl restart freeradius
+sudo systemctl restart apache2
+```
+
+- Daloradius GUI interface can now be accessed at `http://localhost/daloradius`
+
+
 
 
 ### Exercise 2: DNS tunneling
@@ -306,8 +487,15 @@ $: dpkg --install webmin_1.984_all.deb
 - Now login to webmin at the URL: `http://localhost:10000`.
 
 
+- Navigate to DNS section and configure as needed.
 
-## STEPS
+
+![webmin_1](images/webmin_1.PNG)
+
+
+__Setup page__
+
+![webmin_setup](images/webmin_setup.PNG)
 
 ![webmin_dnssec.jpg](images/webmin_dnssec.jpg)
 
@@ -316,7 +504,8 @@ $: dpkg --install webmin_1.984_all.deb
 
 ![dnssec_keys.jpg](images/dnssec_keys.jpg)
 
-- DNSSec solves integrity and  authenticity by providing digital singature(Provides Data origin authenticity​), and authenticates responses to domain name lookups. However, DNSsec does not provide any kind of privacy protection for those lookups.
+
+- `DNSSec` solves integrity and  authenticity by providing digital singature(Provides Data origin authenticity​), and authenticates responses to domain name lookups. However, DNSsec does not provide any kind of privacy protection for those lookups.
 
 __Issues with DNSSec__
 
@@ -375,7 +564,7 @@ server {
 }
 ```
 
-5 Activate streams.
+5. Activate streams.
 
 - Edit `/etc/nignx/nginx.conf` and add the followig after `HTTP block`
 
