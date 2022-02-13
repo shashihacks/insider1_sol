@@ -31,7 +31,7 @@ sudo apt-get install hostapd
 ```bash
 sudo apt-get install dnsmasq
 ```
-4. Modify `/etc/network/interfaces` file to have a static IP/
+4. Modify `/etc/network/interfaces` file to have a static IP.
 
 ```bash
 auto wlan0
@@ -95,31 +95,19 @@ cd /etc/bind/
 ```
 and execute  
 ```bash
-cp db.127 reverse.example.com
+cp db.127 forward.example.com
 ```
 - open `/etc/bind/forward.example.com` and make the following changes
 
+![forward_zone](images/forward_zone.PNG)
 
-```bash
-$TTL    604800
-@       IN      SOA     pay.example.com. root.test.example.com. (
-                              2         ; Serial
-                         604800         ; Refresh
-                          86400         ; Retry
-                        2419200         ; Expire
-                         604800 )       ; Negative Cache TTL
-@       IN      NS      test.example.com.
-pay     IN      A       192.168.47.129
-www     IN      A       192.168.47.129
-@       IN      AAAA    ::1
-````
 
-- open `/etc/resolv.conf` and add the record
+- We created another zone called `example2.com`  (`/etc/bind/forward.example2.com`)and used following to allow zone-transfers
 
-```bash
-search example.com
-nameserver 192.168.47.2 # gateway or DNS server IP
-```
+![zone_transferr](images/zone_transferr.PNG)
+
+
+
 
 - restart `bind9`
 
