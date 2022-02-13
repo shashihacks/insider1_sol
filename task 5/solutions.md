@@ -127,6 +127,14 @@ $: systemctl restart bind9
 __Setting up Coova Chilli Captive portal__
 
 
+<!-- ADD here 
+images and setup
+-->
+MySQL: Database​​
+
+Freeradius: Authentication server​​​
+
+Daloradius: GUI for Radius server
 
 
 ### Exercise 2: DNS tunneling
@@ -283,7 +291,7 @@ __3.2 Deploy DNSSec on the appropriate servers in your network and explain which
 
 __Solution:__
 
-- For deploying we used `Webmin` to and configured our DNS server to `DNSSec` support.
+- For deploying we used `Webmin` to and configured our DNS server to  support `DNSSec`.
 
 __Installing `webmin`__
 
@@ -299,7 +307,7 @@ $: dpkg --install webmin_1.984_all.deb
 
 
 
-## Steps to setup DNSsec
+## STEPS
 
 ![webmin_dnssec.jpg](images/webmin_dnssec.jpg)
 
