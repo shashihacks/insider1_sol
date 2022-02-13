@@ -250,7 +250,7 @@ $ sudo mv daloradius-master /var/www/html/daloradius
 ```
 
 
-__ Import the daloRAIUS MySQL tables to the FreeRADIUS database__
+__Import the daloRAIUS MySQL tables to the FreeRADIUS database__
 
 ```bash
 cd /var/www/html/daloradius
@@ -304,6 +304,7 @@ sudo systemctl restart apache2
 - Daloradius GUI interface can now be accessed at `http://localhost/daloradius`
 
 
+![dalo_home](images/dalo_home.PNG)
 
 
 ### Exercise 2: DNS tunneling
